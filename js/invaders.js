@@ -107,7 +107,7 @@
     for (const q of list) q.shielded = false;
     for (const cm of list) {
       if (cm.type !== 'cmd') continue;
-      for (const q of list) if (q !== cm && Math.abs(q.c - cm.c) <= 1 && Math.abs(q.r - cm.r) <= 1) q.shielded = true;
+      for (const q of list) if (q !== cm && q.type !== 'cmd' && Math.abs(q.c - cm.c) <= 1 && Math.abs(q.r - cm.r) <= 1) q.shielded = true;      /* never another Commander: two side by side would shield each other and could not be killed */
     }
     const interval = Math.max(0.035, list.length / 55 * g.baseInterval);
     f.stepT += dt;

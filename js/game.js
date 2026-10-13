@@ -251,6 +251,14 @@
 
   /* ---------- collisions ---------- */
   const BOMB_POWER = { needle: 1.2, wobble: 1.8, plunger: 3.2, orb: 2, big: 2.6 };
+  /* does the segment (x0,y0)-(x1,y1) touch the rectangle? (slab test) */
+  function segHitsRect(x0, y0, x1, y1, rx0, ry0, rx1, ry1) {
+    let t0 = 0, t1 = 1; const dx = x1 - x0, dy = y1 - y0;
+    for (const [p, q] of [[-dx, x0 - rx0], [dx, rx1 - x0], [-dy, y0 - ry0], [dy, ry1 - y0]]) {
+      if (p === 0) { if (q < 0) return false; } else { const r = q / p; if (p < 0) { if (r > t1) return false; if (r > t0) t0 = r; } else { if (r < t0) return false; if (r < t1) t1 = r; } }
+    }
+    return true;
+  }
   Game.collide = function () {
     const p = this.player, boss = this.boss && this.boss.state === 'fight' ? this.boss : null;
     for (const b of this.pb) {
@@ -264,8 +272,8 @@
       }
       for (const q of this.inv) {
         if (q.dead || q.spawnT > 0) continue;
-        const rr = q.r + b.r;
-        if (U.dist2(b.x, b.y, q.x, q.y) < rr * rr) {
+        const tr = Inv.TYPES[q.type].r, hw = tr * 1.2 + b.r, hh = tr * 1.05 + b.r;                    /* q.r is the formation ROW (0-5): the old test used it as a radius, so the hit area was only a few pixels */
+        if (segHitsRect(b.px === undefined ? b.x : b.px, b.py === undefined ? b.y : b.py, b.x, b.y, q.x - hw, q.y - hh, q.x + hw, q.y + hh)) {      /* the whole path the shot travelled this frame against a box a little bigger than the sprite: nothing slips between invaders */
           if (b.pierce) { if (b.hit.indexOf(q.id) >= 0) continue; b.hit.push(q.id); }
           Inv.damage(this, q, b.dmg);
           if (!b.pierce) { b.dead = true; break; }
@@ -308,7 +316,7 @@
   function step(arr, dt, w, h) {
     for (let i = arr.length - 1; i >= 0; i--) {
       const b = arr[i];
-      b.t = (b.t || 0) + dt;
+      b.t = (b.t || 0) + dt; b.px = b.x; b.py = b.y;
       b.x += b.vx * dt; b.y += b.vy * dt;
       if (b.kind === 'wobble') { b.ax += b.vx * dt; b.x = b.ax + Math.sin(b.t * 7) * 16; }
       if (b.dead || b.y < -70 || b.y > h + 40 || b.x < -40 || b.x > w + 40) { arr[i] = arr[arr.length - 1]; arr.pop(); }
