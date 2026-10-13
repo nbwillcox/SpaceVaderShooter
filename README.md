@@ -33,7 +33,7 @@ Everything is generated in code: sprites are vector-drawn on the fly, and all so
   - **S** shield bubble
   - **B** smart bomb
 - Chain kills for a score multiplier (up to x8) and clear a wave without being hit for a Perfect bonus.
-- Every 5th wave is an **Overlord**: a giant armored invader that marches and drops like the formation. Shoot off its turrets, cannons, beam emitters and launchers, take out the generators to drop the core shield, then destroy the core before it crushes the shields and reaches the planet. Five unique bosses, scaling up each loop.
+- Every 5th wave is an **Overlord**: a giant armored invader that marches and drops like the formation. Shoot off its turrets, cannons, beam emitters and launchers, take out the generators to drop the core shield, then destroy the core before it crushes the shields and reaches the planet. Five unique bosses, scaling up each loop. While a boss is alive, **diver** ships swoop in from the top in S-curves, firing as they come: shoot them down, because a diver that reaches a shield blows it up completely and costs you 1000 points.
 - Local top-10 high scores with arcade-style 3-letter initials (stored in your browser).
 
 ## Run locally

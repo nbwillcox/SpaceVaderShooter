@@ -153,6 +153,7 @@
     s.armor = [mk(48, 36, armorDraw(true)), mk(48, 36, armorDraw(false))];
     s.ufo = [mk(84, 48, ufoDraw(0)), mk(84, 48, ufoDraw(1))];
     s.ufoF = s.ufo.map(flashOf);
+    if (G.divers) G.divers.art();
   };
   GFX.initArt = A.init;
 })((window.SGS = window.SGS || {}));

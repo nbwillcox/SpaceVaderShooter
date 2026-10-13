@@ -16,7 +16,7 @@
     this.combo = 0; this.comboT = 0; this.mult = 1;
     this.lifeIdx = 0; this.nextLifeAt = C.EXTRA_LIFE_AT[0];
     this.pb = []; this.eb = []; this.pk = []; this.inv = []; this.pods = []; this.ufo = null; this.form = null;
-    this.boss = null; this.banner = null; this.bunkers = [];
+    this.boss = null; this.banner = null; this.bunkers = []; this.divers = []; this.diverT = 4.5; this.diverQ = [];
     this.stageTime = 0; this.perfect = true; this.timer = 0; this.over = false; this.overDone = false;
     this.freeze = 0; this.world = 0; this.bombT = 2; this.ufoT = 15; this.baseInterval = 0.55;
     this.player = newPlayer();
@@ -138,6 +138,7 @@
     for (const q of this.pods.slice()) Inv.killPod(this, q);
     if (this.ufo) Inv.killUfo(this);
     if (this.boss && this.boss.state === 'fight') G.boss.bombed(this, this.boss);
+    G.divers.bombed(this);
   };
 
   Game.hitPlayer = function () {
@@ -270,6 +271,7 @@
         u.flash = 0.06; Inv.killUfo(this);
         if (!b.pierce) { b.dead = true; continue; }
       }
+      if (G.divers.shotHit(this, b, segHitsRect)) continue;
       for (const q of this.inv) {
         if (q.dead || q.spawnT > 0) continue;
         const tr = Inv.TYPES[q.type].r, hw = tr * 1.2 + b.r, hh = tr * 1.05 + b.r;                    /* q.r is the formation ROW (0-5): the old test used it as a radius, so the hit area was only a few pixels */
@@ -335,6 +337,7 @@
     Inv.updateUfo(this, dt);
     Inv.updatePods(this, dt);
     if (this.boss) G.boss.update(this, this.boss, dt);
+    G.divers.update(this, dt);
     step(this.eb, dt, W, H);
     Sh.update(this, dt);
     for (let i = this.pk.length - 1; i >= 0; i--) {
@@ -359,7 +362,7 @@
     this.stage = n; this.stageTime = 0; this.perfect = true;
     this.world = Math.floor((n - 1) / C.BOSS_EVERY) % 5;
     this.clearEnemyBullets(false);
-    this.inv = []; this.pods = []; this.ufo = null; this.form = null;
+    this.inv = []; this.pods = []; this.ufo = null; this.form = null; G.divers.reset(this);
     Sh.build(this);
     const key = [0, 2, -2, 3, 5][this.world];
     if (n % C.BOSS_EVERY === 0) {
@@ -465,6 +468,7 @@
     }
     Inv.draw(ctx, this);
     if (this.boss) G.boss.draw(ctx, this, this.boss);
+    G.divers.draw(ctx, this);
     FX.drawNorm(ctx);
     for (const b of this.eb) {
       if (b.kind === 'needle') GFX.draw(ctx, spr.eneedle, b.x, b.y, Math.atan2(b.vy, b.vx) - Math.PI / 2);
